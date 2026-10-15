@@ -55,6 +55,12 @@ Copy `examples/atlas-auto-close.json` and edit:
 - `thumbnail` — `headline` (`[[words]]` get the brand gradient), `subtitle` (`\n` = line break), two `chips`,
   `card_image` = a crop of the strongest UI moment (`ffmpeg -ss T -i clip -frames:v 1 -vf crop=…`).
 - `speed` (1.12 = what the user asked for once; 1.0 = untouched), `output`.
+- `intro_music` — **`"synth"` (default, FREE)**: a ~3.6 s sting synthesized with ffmpeg (riser, sub hit on the thumbnail
+  shine, pad, pluck arpeggio), fading out under the first words. `"ai"` = **PAID** Google Lyria 3.5 via the `genmedia`
+  CLI (~$0.10 per generation on the user's fal key) — only when the user asks for it and agrees to the price; the user
+  said «خليه مجاني وليه أوبشن يدفع هو». `"none"` = silent, or a path to their own audio file.
+  `intro_music_volume` (default 0.9) — the music is mixed AFTER the voice is loudness-normalized, so this is
+  absolute; 0.9 lands the hit ~1 dB under the voice.
 
 ## 4. Render graphics
 
@@ -78,9 +84,9 @@ still + `overlay` instead.
 
 ## 6. WhatsApp copy
 
-Re-encode from the high-quality pieces (not the CRF-24 file): `scale=1280:720:flags=lanczos,unsharp=5:5:0.6`,
-`-crf 17 -maxrate 4M -bufsize 8M -tune stillimage -g 60` → `<name>-WhatsApp.mp4` (~15 MB for 2 min).
-Tell the user: press **HD** in WhatsApp, or send as Document to keep 1440p.
+`build_video.py` writes it automatically from the high-quality pieces (not from the CRF-24 file):
+`scale=1280:720:flags=lanczos,unsharp=5:5:0.6`, `-crf 17 -maxrate 4M -tune stillimage -g 60` →
+`<name>-WhatsApp.mp4` (~15 MB for 2 min). Tell the user: press **HD** in WhatsApp, or send the master as a Document.
 
 ## 7. Verify and report
 
@@ -91,7 +97,9 @@ Tell the user: press **HD** in WhatsApp, or send as Document to keep 1440p.
 
 - `scripts/inspect.sh` — durations, per-second tiles, Groq transcript.
 - `scripts/render_gfx.js` — branded graphics from the config.
-- `scripts/build_video.py` — pieces → transitions → final + thumbnail.
+- `scripts/build_video.py` — pieces → transitions → intro music → final + WhatsApp copy + thumbnail.
+  `--reuse-pieces` skips re-rendering clips already in `<workdir>/pieces` (audio/encode-only changes take ~2 min).
+- `scripts/intro_music.sh synth|ai <out.wav>` — the intro sting (free synth or paid Lyria).
 - `assets/gfx.html` — the frame / thumbnail / outro design (2560×1440, RTL, Thmanyah). `.scene{overflow:hidden}`
   is load-bearing: in RTL an element hanging off the left edge shifts the whole screenshot.
 - `assets/` — Tornix mark + wordmark, Atlas figures (`idle`, `celebrating`, `explaining`), Thmanyah weights.

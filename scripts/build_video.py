@@ -49,6 +49,8 @@ for i, clip in enumerate(cfg['clips']):
     atempo = f'atempo={SPEED},' if SPEED != 1.0 else ''
     parts.append(f'[0:a]asetpts=PTS-STARTPTS,highpass=f=80,afftdn=nf=-25,{atempo}aresample=48000,'
                  f'adelay={int(PAD * 1000)}:all=1,apad=pad_dur={PAD}[ao]')
+    if '--reuse-pieces' in sys.argv and os.path.exists(out):
+        print('clip', i, 'reused', flush=True); continue
     trim = []
     if 'from' in clip: trim += ['-ss', str(clip['from'])]
     if 'to' in clip: trim += ['-to', str(clip['to'])]
@@ -74,7 +76,22 @@ for k in range(1, len(seq)):
     af.append(f'{ca}[{k}:a]acrossfade=d={T}:c1=nofade:c2=nofade[a{k}]')
     cv, ca = f'[v{k}]', f'[a{k}]'
     t = off + D[k]
-fc = ';'.join(vf + af) + f';{ca}loudnorm=I=-16:TP=-1.5:LRA=11,aresample=48000[af]'
+# intro music: "synth" (free, default) | "ai" (paid, Lyria on fal — only when the user asked and agreed) | "none" | a file path
+music = cfg.get('intro_music', 'synth')
+mix = ''
+if music != 'none':
+    mfile = os.path.join(W, 'intro_music.wav')
+    if music in ('synth', 'ai'):
+        run(['bash', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'intro_music.sh'), music, mfile])
+    else:
+        mfile = music if os.path.isabs(music) else os.path.join(base, music)
+    args += ['-i', mfile]
+    vol = float(cfg.get('intro_music_volume', 0.9))
+    # mixed AFTER the voice is normalized: loudnorm on the mix would pull the music back up to voice level
+    mix = (f';[{len(seq)}:a]aresample=48000,aformat=channel_layouts=mono,volume={vol}[mus]'
+           f';[vn][mus]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.89')
+voice = f';{ca}loudnorm=I=-16:TP=-1.5:LRA=11,aresample=48000' + ('[vn]' if mix else '')
+fc = ';'.join(vf + af) + voice + mix + '[af]'
 final = os.path.join(base, cfg['output']) if not os.path.isabs(cfg['output']) else cfg['output']
 os.makedirs(os.path.dirname(final) or '.', exist_ok=True)
 if os.path.exists(final) and '--overwrite' not in sys.argv:
@@ -86,8 +103,7 @@ run(['ffmpeg', '-v', 'error', '-y'] + args + ['-filter_complex', fc, '-map', cv,
      '-r', '30', '-g', '300', '-c:a', 'aac', '-b:a', '128k', '-ac', '1', '-movflags', '+faststart', final])
 # WhatsApp re-encodes to <=720p at a low bitrate and wrecks small UI text; hand it a clean, sharpened 720p instead
 wa = os.path.splitext(final)[0] + '-WhatsApp.mp4'
-fc_wa = ';'.join(vf + af) + (f';{cv}scale=1280:720:flags=lanczos,unsharp=5:5:0.6:5:5:0.0,format=yuv420p[vo]'
-                             f';{ca}loudnorm=I=-16:TP=-1.5:LRA=11,aresample=48000[af]')
+fc_wa = ';'.join(vf + af) + voice + mix + '[af]' + f';{cv}scale=1280:720:flags=lanczos,unsharp=5:5:0.6:5:5:0.0,format=yuv420p[vo]'
 run(['ffmpeg', '-v', 'error', '-y'] + args + ['-filter_complex', fc_wa, '-map', '[vo]', '-map', '[af]',
      '-c:v', 'libx264', '-preset', 'slow', '-crf', '17', '-maxrate', '4M', '-bufsize', '8M', '-tune', 'stillimage',
      '-profile:v', 'high', '-level', '4.0', '-pix_fmt', 'yuv420p', '-r', '30', '-g', '60',

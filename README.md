@@ -6,6 +6,7 @@ A Claude Code skill that turns raw screen recordings of a product walkthrough in
 - a purple **branded frame** around the screen, with a section title on top and step chips underneath
 - **zooms** on the key moments so UI text stays readable
 - **transitions only over silent padding**, so no spoken word is ever cut
+- a short **intro music sting** — free (synthesized with ffmpeg) by default, or paid AI music (Lyria 3.5 on fal.ai) as an option
 - an animated **outro**
 - a **WhatsApp-tuned 720p copy** (sharpened, high bitrate) alongside the 1440p master
 
