@@ -1,0 +1,177 @@
+<!doctype html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8">
+<!-- Rendered by render_gfx.js. Everything visible comes from window.CFG (the video config). -->
+<style>
+  @font-face { font-family: T; src: url(assets/thmanyah-400.woff2); font-weight: 400; }
+  @font-face { font-family: T; src: url(assets/thmanyah-500.woff2); font-weight: 500; }
+  @font-face { font-family: T; src: url(assets/thmanyah-700.woff2); font-weight: 700; }
+  @font-face { font-family: T; src: url(assets/thmanyah-900.woff2); font-weight: 900; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 2560px; height: 1440px; overflow: hidden; background: transparent; font-family: T, sans-serif; }
+  /* overflow:hidden is load-bearing: in RTL an element hanging off the left edge scrolls the whole page sideways */
+  .scene { position: absolute; inset: 0; display: none; overflow: hidden; }
+  .bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(1200px 700px at 85% 0%, rgba(144,104,230,.55), transparent 70%),
+      radial-gradient(1000px 800px at 0% 100%, rgba(35,187,121,.18), transparent 70%),
+      linear-gradient(135deg, #160b31 0%, #2a1258 55%, #3a1878 100%);
+  }
+  .ghost { position: absolute; width: 1500px; left: -260px; top: -80px; opacity: .06; }
+
+  .top { position: absolute; top: 0; left: 80px; right: 80px; height: 170px; display: flex; align-items: center; gap: 36px; }
+  .top .wm { height: 64px; filter: brightness(0) invert(1); }
+  .top .sep { width: 2px; height: 56px; background: rgba(255,255,255,.25); }
+  .top .title { color: #fff; font-size: 54px; font-weight: 700; }
+  .top .num { display: inline-flex; width: 74px; height: 74px; border-radius: 50%; align-items: center; justify-content: center;
+              background: linear-gradient(135deg,#9068e6,#7d42c6); color: #fff; font-size: 44px; font-weight: 700; margin-inline-end: 22px; }
+  .top .tag { margin-inline-start: auto; color: rgba(255,255,255,.75); font-size: 36px; font-weight: 500; display: flex; align-items: center; gap: 16px; }
+  .top .tag img { height: 72px; }
+  .slot { position: absolute; left: 80px; top: 170px; width: 2400px; height: 1125px; border-radius: 22px;
+          box-shadow: 0 30px 80px rgba(0,0,0,.45), 0 0 0 2px rgba(255,255,255,.12); background: #fff; }
+  .steps { position: absolute; left: 0; right: 0; top: 1295px; bottom: 0; display: flex; align-items: center; justify-content: center; gap: 28px; }
+  .step { font-size: 36px; font-weight: 500; color: rgba(255,255,255,.55); padding: 14px 34px; border-radius: 999px; border: 2px solid rgba(255,255,255,.15); }
+  .step.on { color: #fff; background: rgba(144,104,230,.45); border-color: rgba(190,160,255,.7); }
+  .step.done { color: rgba(255,255,255,.8); }
+  .step.done::before { content: '✓ '; color: #3ee09a; }
+
+  .t-text { position: absolute; right: 150px; top: 250px; width: 1250px; color: #fff; }
+  .pill { display: inline-flex; align-items: center; gap: 16px; font-size: 40px; font-weight: 500; padding: 14px 34px; border-radius: 999px;
+          background: rgba(255,255,255,.1); border: 2px solid rgba(255,255,255,.22); }
+  .pill .dot { width: 18px; height: 18px; border-radius: 50%; background: #3ee09a; box-shadow: 0 0 20px #3ee09a; }
+  .h1 { font-size: 196px; font-weight: 900; line-height: 1.12; margin-top: 50px; letter-spacing: -2px; }
+  .h1 .grad { background: linear-gradient(90deg, #23bb79, #709ebb 45%, #b79bff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .h2 { font-size: 150px; font-weight: 900; line-height: 1.15; display: flex; align-items: center; gap: 36px; }
+  .h2 img { height: 140px; filter: brightness(0) invert(1); margin-top: 18px; }
+  .sub { font-size: 54px; font-weight: 500; color: rgba(255,255,255,.82); margin-top: 46px; line-height: 1.5; }
+  .card { position: absolute; left: 170px; top: 330px; width: 1000px; border-radius: 34px; overflow: hidden;
+          transform: rotate(-4deg); box-shadow: 0 50px 120px rgba(0,0,0,.55), 0 0 0 3px rgba(255,255,255,.18); background: #fff; }
+  .card img { display: block; width: 100%; }
+  .chip { position: absolute; display: flex; align-items: center; gap: 18px; padding: 22px 38px; border-radius: 26px; background: #fff;
+          font-size: 44px; font-weight: 700; color: #1d1442; box-shadow: 0 26px 60px rgba(0,0,0,.4); }
+  .chip .ok { width: 58px; height: 58px; border-radius: 50%; background: #23bb79; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 38px; }
+  .figure { position: absolute; left: 960px; top: 760px; width: 560px; filter: drop-shadow(0 40px 60px rgba(0,0,0,.5)); }
+  .shine { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,.16) 50%, transparent 60%); }
+
+  .o-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 60px; color: #fff; }
+  .o-mark { width: 300px; }
+  .o-wm { height: 120px; filter: brightness(0) invert(1); }
+  .o-line { font-size: 68px; font-weight: 700; }
+  .o-sub { font-size: 44px; font-weight: 500; color: rgba(255,255,255,.7); }
+
+  .mask { position: absolute; inset: 0; background: #000; }
+  .mask div { position: absolute; left: 0; top: 0; width: 2400px; height: 1125px; border-radius: 22px; background: #fff; }
+</style>
+</head>
+<body>
+
+<div class="scene" id="frame">
+  <div class="bg"></div>
+  <img class="ghost" src="assets/mark.svg">
+  <div class="top">
+    <img class="wm" src="assets/wordmark.svg">
+    <div class="sep"></div>
+    <div class="title" id="ftitle"></div>
+    <div class="tag"><span id="ftag"></span><img src="assets/idle.webp"></div>
+  </div>
+  <div class="slot"></div>
+  <div class="steps" id="steps"></div>
+</div>
+
+<div class="scene" id="thumb">
+  <div class="bg"></div>
+  <img class="ghost" src="assets/mark.svg" id="tghost">
+  <div class="card" id="tcard"><img id="tcardimg"></div>
+  <div class="chip" id="chip1" style="left:110px; top:1130px;"><span class="ok">✓</span><span></span></div>
+  <div class="chip" id="chip2" style="left:880px; top:200px;"><span class="ok">✓</span><span></span></div>
+  <img class="figure" id="tfig" src="assets/celebrating.webp">
+  <div class="t-text">
+    <div class="pill"><span class="dot"></span><span id="tpill"></span></div>
+    <div class="h1" id="th1"></div>
+    <div class="h2"><span id="th2"></span><img src="assets/wordmark.svg"></div>
+    <div class="sub" id="tsub"></div>
+  </div>
+  <div class="shine" id="tshine"></div>
+</div>
+
+<div class="scene" id="outro">
+  <div class="bg"></div>
+  <div class="o-wrap">
+    <img class="o-mark" id="omark" src="assets/mark.svg">
+    <img class="o-wm" id="owm" src="assets/wordmark.svg">
+    <div class="o-line" id="oline"></div>
+    <div class="o-sub" id="osub"></div>
+  </div>
+</div>
+
+<div class="scene" id="maskscene"><div class="mask"><div></div></div></div>
+
+<script>
+  const ease = (x) => { x = Math.min(1, Math.max(0, x)); return x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x+2, 3)/2; };
+  const back = (x) => { x = Math.min(1, Math.max(0, x)); const c1 = 1.70158, c3 = c1 + 1; return 1 + c3*Math.pow(x-1,3) + c1*Math.pow(x-1,2); };
+  const esc = (s) => String(s ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+
+  window.applyConfig = (cfg) => {
+    window.CFG = cfg;
+    document.getElementById('ftag').textContent = cfg.frame?.tag ?? '';
+    const t = cfg.thumbnail ?? {};
+    document.getElementById('tpill').textContent = t.pill ?? '';
+    // headline: words wrapped in [[...]] get the brand gradient
+    document.getElementById('th1').innerHTML = esc(t.headline).replace(/\[\[(.+?)\]\]/g, '<span class="grad">$1</span>');
+    document.getElementById('th2').textContent = t.brand_prefix ?? 'في';
+    document.getElementById('tsub').innerHTML = esc(t.subtitle).replace(/\n/g, '<br>');
+    const chips = t.chips ?? [];
+    ['chip1', 'chip2'].forEach((id, i) => {
+      const el = document.getElementById(id);
+      el.style.display = chips[i] ? 'flex' : 'none';
+      el.lastElementChild.textContent = chips[i] ?? '';
+    });
+    const card = document.getElementById('tcard');
+    card.style.display = t.card_image ? 'block' : 'none';
+    if (t.card_image) document.getElementById('tcardimg').src = t.card_image;
+    document.getElementById('tfig').src = 'assets/' + (t.figure ?? 'celebrating') + '.webp';
+    document.getElementById('oline').textContent = cfg.outro?.line ?? '';
+    document.getElementById('osub').textContent = cfg.outro?.sub ?? 'tornix.ai';
+  };
+
+  window.show = (mode, sec) => {
+    document.querySelectorAll('.scene').forEach(s => s.style.display = 'none');
+    document.getElementById(mode).style.display = 'block';
+    if (mode !== 'frame') return;
+    const s = CFG.sections[sec];
+    document.getElementById('ftitle').innerHTML = (s.step ? `<span class="num">${s.step}</span>` : '') + esc(s.title);
+    const steps = CFG.steps ?? [];
+    const cur = s.step ?? (s.all_done ? steps.length + 1 : 0);
+    document.getElementById('steps').innerHTML = steps.map((label, i) => {
+      const n = i + 1; const cls = n < cur ? 'done' : n === cur ? 'on' : '';
+      return `<div class="step ${cls}">${n} · ${esc(label)}</div>`;
+    }).join('');
+  };
+
+  // t = 0 is the finished thumbnail, so the video's first frame IS the thumbnail.
+  window.thumbAt = (t) => {
+    show('thumb');
+    document.getElementById('tfig').style.transform = `translateY(${Math.sin(t * 2.4) * 14}px) rotate(${Math.sin(t*1.6)*2}deg)`;
+    document.getElementById('tcard').style.transform = `rotate(${-4 + Math.sin(t*1.2)*0.6}deg) translateY(${-Math.sin(t*1.2)*6}px)`;
+    const sh = document.getElementById('tshine'); const p = (t - 0.35) / 0.9;
+    sh.style.opacity = p > 0 && p < 1 ? 1 : 0; sh.style.transform = `translateX(${-2600 + 5200 * ease(p)}px)`;
+    [['chip1', .2], ['chip2', .45]].forEach(([id, d]) => {
+      const s = 1 + 0.06 * Math.max(0, Math.sin(Math.max(0, t - d) * 5)) * (t > d && t < d + .63 ? 1 : 0);
+      document.getElementById(id).style.transform = `scale(${s})`;
+    });
+    document.getElementById('tghost').style.transform = `rotate(${t*4}deg)`;
+  };
+
+  window.outroAt = (t) => {
+    show('outro');
+    const m = document.getElementById('omark');
+    m.style.transform = `scale(${0.4 + 0.6*back(t / .7)}) rotate(${(1-ease(t/.9))*-120}deg)`; m.style.opacity = Math.min(1, t / .3);
+    const w = document.getElementById('owm'); w.style.opacity = ease((t - .45) / .5); w.style.transform = `translateY(${(1-ease((t-.45)/.5))*40}px)`;
+    const l = document.getElementById('oline'); l.style.opacity = ease((t - .8) / .5); l.style.transform = `translateY(${(1-ease((t-.8)/.5))*40}px)`;
+    document.getElementById('osub').style.opacity = ease((t - 1.1) / .5) * .9;
+  };
+</script>
+</body>
+</html>

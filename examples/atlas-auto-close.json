@@ -1,0 +1,39 @@
+{
+  "output": "out/Tornix-Atlas-Auto-Close.mp4",
+  "speed": 1.12,
+  "pad_seconds": 0.3,
+  "transition_seconds": 0.5,
+  "crf": 24,
+  "intro_seconds": 2.4,
+  "outro_seconds": 3.0,
+  "steps": ["إنشاء المهام", "الإغلاق التلقائي", "تحكّم المسؤول"],
+  "frame": { "tag": "أطلس · إغلاق المهام تلقائيًا" },
+  "sections": [
+    { "title": "أطلس يُنشئ مهامك ويُغلقها تلقائيًا" },
+    { "title": "إنشاء المهام بالذكاء الاصطناعي", "step": 1 },
+    { "title": "أطلس يُغلق المهمة من نشاطك", "step": 2 },
+    { "title": "المسؤول يتحكم فيما يراه أطلس", "step": 3 },
+    { "title": "الخلاصة", "all_done": true }
+  ],
+  "thumbnail": {
+    "pill": "جديد في المهام · أطلس",
+    "headline": "إعصار [[إغلاق المهام]]",
+    "brand_prefix": "في",
+    "subtitle": "أطلس يُنشئ مهامك بالذكاء الاصطناعي\nويُغلقها لوحده من نشاطك",
+    "chips": ["أُغلقت تلقائيًا", "تحقق معيار القبول"],
+    "card_image": "panel.png",
+    "figure": "celebrating"
+  },
+  "outro": { "line": "ركّز في شغلك، وسيب متابعة المهام لأطلس", "sub": "tornix.ai" },
+  "clips": [
+    { "path": "recordings/01-intro.mov", "section": 0 },
+    { "path": "recordings/02-create-with-atlas.mov", "section": 1,
+      "zooms": [ { "from": 0, "to": 13.4, "x": 700, "y": 150, "w": 1700 }, { "from": 16.8, "x": 0, "y": 0, "w": 1500 } ] },
+    { "path": "recordings/03-create-from-board.mov", "section": 1 },
+    { "path": "recordings/04-chat-closes-task.mov", "section": 2,
+      "zooms": [ { "from": 0, "to": 16.8, "x": 0, "y": 600, "w": 1500 }, { "from": 21.3, "to": 28.8, "x": 0, "y": 0, "w": 1500 }, { "from": 28.8, "x": 0, "y": 600, "w": 1500 } ] },
+    { "path": "recordings/05-activity-log.mov", "section": 2 },
+    { "path": "recordings/06-admin-sources.mov", "section": 3 },
+    { "path": "recordings/07-summary.mov", "section": 4 }
+  ]
+}
